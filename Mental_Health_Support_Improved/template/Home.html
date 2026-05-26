@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MindEase — AI-Powered Mental Health Support{% endblock %}
+{% block extra_head %}
+<style>
+    /* ── Hero ── */
+    .hero {
+        min-height: calc(100vh - 64px);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; padding: 4rem 2rem;
+        position: relative; overflow: hidden;
+    }
+    .hero-bg {
+        position: absolute; inset: 0; z-index: 0;
+        background:
+            radial-gradient(ellipse 80% 60% at 50% 0%, rgba(56,189,248,0.12) 0%, transparent 70%),
+            radial-gradient(ellipse 60% 50% at 20% 80%, rgba(129,140,248,0.10) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 50% at 80% 80%, rgba(52,211,153,0.08) 0%, transparent 60%);
+    }
+    .hero-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 100px; padding: 0.4rem 1rem;
+        font-size: 0.82rem; color: var(--accent); font-weight: 500;
+        margin-bottom: 2rem; animation: fadeUp 0.6s ease both;
+        letter-spacing: 0.3px;
+    }
+    .hero-badge .dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: var(--accent3);
+        box-shadow: 0 0 8px var(--accent3);
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+    .hero h1 {
+        font-family: var(--font-head); font-size: clamp(2.4rem, 6vw, 4.5rem);
+        font-weight: 800; line-height: 1.1; letter-spacing: -1.5px;
+        max-width: 800px; margin: 0 auto 1.5rem;
+        animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .hero p {
+        font-size: 1.15rem; color: var(--text-muted); max-width: 540px;
+        margin: 0 auto 2.5rem; line-height: 1.7; font-weight: 300;
+        animation: fadeUp 0.7s 0.2s ease both;
+    }
+    .hero-cta {
+        display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+        animation: fadeUp 0.7s 0.3s ease both;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #fff; padding: 0.85rem 2rem; border-radius: 10px;
+        font-weight: 600; font-size: 1rem; text-decoration: none;
+        border: none; cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+        box-shadow: 0 4px 20px rgba(56,189,248,0.3);
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+    .btn-outline {
+        background: transparent; color: var(--text);
+        border: 1px solid var(--border); padding: 0.85rem 2rem;
+        border-radius: 10px; font-weight: 500; font-size: 1rem;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); background: rgba(56,189,248,0.05); }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+        display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+        padding: 2rem; margin: 0 auto; max-width: 700px;
+        animation: fadeUp 0.7s 0.4s ease both; position: relative; z-index: 1;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-family: var(--font-head); font-size: 2rem; font-weight: 800; color: var(--accent); }
+    .stat-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    /* ── Features ── */
+    .features {
+        padding: 5rem 2rem; max-width: 1100px; margin: 0 auto;
+    }
+    .section-label {
+        text-align: center; font-size: 0.82rem; font-weight: 600;
+        letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+        margin-bottom: 1rem;
+    }
+    .section-title {
+        font-family: var(--font-head); font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 800; text-align: center; margin-bottom: 3.5rem;
+        letter-spacing: -0.5px;
+    }
+    .features-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    .feature-card {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 2rem;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow);
+        border-color: rgba(56,189,248,0.25);
+    }
+    .feature-icon {
+        width: 48px; height: 48px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; margin-bottom: 1.2rem;
+        background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(129,140,248,0.15));
+    }
+    .feature-card h3 {
+        font-family: var(--font-head); font-size: 1.15rem;
+        font-weight: 700; margin-bottom: 0.6rem;
+    }
+    .feature-card p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.65; }
+
+    /* ── Tech stack ── */
+    .tech-section {
+        padding: 4rem 2rem; text-align: center;
+        border-top: 1px solid var(--border);
+        background: var(--bg2);
+    }
+    .tech-chips {
+        display: flex; flex-wrap: wrap; gap: 0.75rem;
+        justify-content: center; max-width: 700px; margin: 2rem auto 0;
+    }
+    .chip {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 100px; padding: 0.35rem 1rem;
+        font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
+        transition: all 0.2s;
+    }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── CTA section ── */
+    .cta-section {
+        padding: 6rem 2rem; text-align: center;
+        background: linear-gradient(135deg, rgba(56,189,248,0.05), rgba(129,140,248,0.05));
+    }
+    .cta-section h2 {
+        font-family: var(--font-head); font-size: clamp(1.8rem, 4vw, 2.6rem);
+        font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.5px;
+    }
+    .cta-section p { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2.5rem; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div style="position:relative;z-index:1;width:100%;">
+        <div class="hero-badge">
+            <span class="dot"></span>
+            LSTM + NLP · Deployed on Django
+        </div>
+        <h1>AI-Powered<br><span class="gradient-text">Mental Health</span> Support</h1>
+        <p>A conversational AI assistant built with deep learning that provides empathetic support, coping strategies, and mental wellness guidance.</p>
+        <div class="hero-cta">
+            {% if user.is_authenticated %}
+                <a href="/chatbot/" class="btn-primary">Open Chat →</a>
+            {% else %}
+                <a href="/register/" class="btn-primary">Get Started Free →</a>
+                <a href="/login/" class="btn-outline">Sign In</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-strip">
+    <div class="stat"><div class="stat-num">LSTM</div><div class="stat-label">Deep Learning Model</div></div>
+    <div class="stat"><div class="stat-num">NLP</div><div class="stat-label">Text Classification</div></div>
+    <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">Always Available</div></div>
+</div>
+
+<!-- Features -->
+<section class="features">
+    <div class="section-label">What it does</div>
+    <h2 class="section-title">Powered by AI & Machine Learning</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>LSTM Neural Network</h3>
+            <p>A stacked LSTM model trained on mental health conversation patterns, using TensorFlow/Keras with layer normalization for stable training.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <h3>Intent Classification</h3>
+            <p>Multi-class NLP classification with tokenization, sequence padding, and label encoding to understand user input and route to best responses.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Secure Auth System</h3>
+            <p>Full Django authentication with CSRF protection, password validation, and session management for user privacy and data security.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Scikit-learn Preprocessing</h3>
+            <p>Label encoding and Keras tokenizer pipelines with proper train/inference consistency — no data leakage between fit and transform steps.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>REST API Backend</h3>
+            <p>AJAX-powered chat with Django JsonResponse, async JS frontend, and real-time typing indicators for smooth user experience.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Production Ready</h3>
+            <p>WhiteNoise static serving, environment-based config, proper model persistence, and Render/Railway deployment support out of the box.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Tech Stack -->
+<section class="tech-section">
+    <div class="section-label">Tech Stack</div>
+    <h2 class="section-title" style="margin-bottom:0;">Built with industry-standard tools</h2>
+    <div class="tech-chips">
+        <span class="chip">Python 3.x</span>
+        <span class="chip">Django 4.x</span>
+        <span class="chip">TensorFlow / Keras</span>
+        <span class="chip">LSTM</span>
+        <span class="chip">NumPy</span>
+        <span class="chip">Pandas</span>
+        <span class="chip">Scikit-learn</span>
+        <span class="chip">SQLite</span>
+        <span class="chip">WhiteNoise</span>
+        <span class="chip">REST API</span>
+        <span class="chip">AJAX / Fetch</span>
+        <span class="chip">NLP</span>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <h2>Start a <span class="gradient-text">conversation</span> today</h2>
+    <p>Your mental health matters. Talk to our AI assistant anytime.</p>
+    {% if user.is_authenticated %}
+        <a href="/chatbot/" class="btn-primary">Open Chat →</a>
+    {% else %}
+        <a href="/register/" class="btn-primary">Create Free Account →</a>
+    {% endif %}
+</section>
+{% endblock %}
